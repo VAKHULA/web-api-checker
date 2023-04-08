@@ -1,113 +1,273 @@
+import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
 
-const inter = Inter({ subsets: ['latin'] })
+function PaymentRequestChecker () {
+  const [paymentRequestSupported, setPaymentRequestSupported] = useState({})
+  const checkPaymentRequest = () => {
+    const paymentRequest = !!("PaymentRequest" in window)
+    setPaymentRequestSupported({ state: paymentRequest ? "granted": "denied" })
+  }
+  useEffect(() => {
+    checkPaymentRequest()
+  }, [])
+  return (
+    <tr>
+      <th scope="row">5</th>
+      <td><mark>{paymentRequestSupported.state}</mark></td>
+      <td>PaymentRequest</td>
+      <td>
+        <code>!!(PaymentRequest in window)</code>
+      </td>
+    </tr>
+  )
+}
 
-export default function Home() {
+function LocalStorageChecker () {
+  const [localStorageSupported, setLocalStorageSupported] = useState({})
+  const checkLocalStorage = () => {
+    const localStorageSupported = !!("localStorage" in window)
+    setLocalStorageSupported({ state: localStorageSupported ? "granted": "denied" })
+  }
+  useEffect(() => {
+    checkLocalStorage()
+  }, [])
+  return (
+    <tr>
+      <th scope="row">6</th>
+      <td><mark>{localStorageSupported.state}</mark></td>
+      <td>localStorage</td>
+      <td>
+        <code>!!(localStorage in window)</code>
+      </td>
+    </tr>
+  )
+}
+
+function ServiceWorkerChecker () {
+  const [isServiceWorkerSupported, setIsServiceWorkerSupported] = useState({})
+  const checkServiceWorker = () => {
+    const isServiceWorker = !!("serviceWorker" in navigator)
+    setIsServiceWorkerSupported({ state: isServiceWorker ? "granted": "denied" })
+  }
+  useEffect(() => {
+    checkServiceWorker()
+  }, [])
+  return (
+    <tr>
+      <th scope="row">4</th>
+      <td><mark>{isServiceWorkerSupported.state}</mark></td>
+      <td>serviceWorker</td>
+      <td>
+        <code>!!(serviceWorker in navigator)</code>
+      </td>
+    </tr>
+  )
+}
+
+function CryptoChecker () {
+  const [isCryptoSupported, setIsCryptoSupported] = useState({})
+  const checkCrypto = () => {
+    const isCryptoEnabled = !!("Crypto" in window)
+    setIsCryptoSupported({ state: isCryptoEnabled ? "granted": "denied" })
+  }
+  useEffect(() => {
+    checkCrypto()
+  }, [])
+  return (
+    <tr>
+      <th scope="row">3</th>
+      <td><mark>{isCryptoSupported.state}</mark></td>
+      <td>Crypto</td>
+      <td>
+        <code>!!(Crypto in window)</code>
+      </td>
+    </tr>
+  )
+}
+
+function CookiesChecker () {
+  const [cookiesPermission, setCookiesPermission] = useState({})
+  const checkCookies = () => {
+    const isCookieEnabled = navigator.cookieEnabled;
+    setCookiesPermission({ state: isCookieEnabled ? "granted": "denied" })
+  }
+  useEffect(() => {
+    checkCookies()
+  }, [])
+  return (
+    <tr>
+      <th scope="row">1</th>
+      <td><mark>{cookiesPermission.state}</mark></td>
+      <td>Cookies</td>
+      <td>
+        <code>navigator.cookieEnabled</code>
+      </td>
+    </tr>
+  )
+}
+
+function BarcodeDetectorChecker () {
+  const [isBarcodeDetectorSupported, setIsBarcodeDetectorSupported] = useState({})
+  const checkBarcodeDetector = () => {
+    const isBarcodeDetectorEnabled = !!("BarcodeDetector" in window)
+    setIsBarcodeDetectorSupported({ state: isBarcodeDetectorEnabled ? "granted": "denied" })
+  }
+  useEffect(() => {
+    checkBarcodeDetector()
+  }, [])
+  return (
+    <tr>
+      <th scope="row">2</th>
+      <td><mark>{isBarcodeDetectorSupported.state}</mark></td>
+      <td>BarcodeDetector</td>
+      <td>
+        <code>!!(BarcodeDetector in window)</code>
+      </td>
+    </tr>
+  )
+}
+
+const permissionsNames = [
+  "geolocation",
+  "notifications",
+  "push",
+  "midi",
+  "camera",
+  "microphone",
+  "speaker",
+  "device-info",
+  "background-fetch",
+  "background-sync",
+  "bluetooth",
+  "persistent-storage",
+  "ambient-light-sensor",
+  "accelerometer",
+  "gyroscope",
+  "magnetometer",
+  "clipboard",
+  "display-capture",
+  "nfc"
+]
+function PermissionsChecker () {
+  const [permissions, setPermissions] = useState([])
+  const getAllPermissions = async () => {
+    const allPermissions = []
+    await Promise.all(
+      permissionsNames.map(async permissionName => {
+          try {
+            let permission
+            switch (permissionName) {
+              case 'push':
+                // Not necessary but right now Chrome only supports push messages with  notifications
+                permission = await navigator.permissions.query({name: permissionName, userVisibleOnly: true})
+                break
+              default:
+                permission = await navigator.permissions.query({name: permissionName})
+            }
+            allPermissions.push({permissionName, state: permission.state})
+          }
+          catch(e){
+            allPermissions.push({permissionName, state: 'error', errorMessage: e.toString()})
+          }
+      })
+    )
+
+    setPermissions(allPermissions)
+  }
+
+  useEffect(() => {
+    getAllPermissions()
+  }, [])
+
+  return (
+    <table>
+    <thead>
+      <tr>
+      <th>
+        #
+      </th>
+      <th>
+        state
+      </th>
+      <th>
+        name
+      </th>
+      <th>
+        error
+      </th>
+      </tr>
+    </thead>
+    <tbody>
+      {permissions.map((item, idx) => (
+        <tr key={idx}>
+          <td>{idx + 1}</td>
+          <td>
+            {item.state === "granted" &&
+              <mark>
+                granted
+              </mark>
+            }
+            {item.state === "error" &&
+              <mark>
+                error
+              </mark>
+            }
+            {item.state === "prompt" &&
+              <mark>
+                prompt
+              </mark>
+            }
+            {item.state === "denied" &&
+              <mark>
+                denied
+              </mark>
+            }
+          </td>
+          <td>
+            {item.permissionName}
+          </td>
+          <td>
+            {item.errorMessage}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  )
+}
+
+export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
+        <title>web-api-checker</title>
+        <meta name="description" content="web-api-checker" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
 
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
+      <main className="container">
+      <table>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">State</th>
+              <th scope="col">Name</th>
+              <th scope="col">Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <CookiesChecker />
+            <BarcodeDetectorChecker />
+            <CryptoChecker/>
+            <ServiceWorkerChecker/>
+            <PaymentRequestChecker/>
+            <LocalStorageChecker />
+          </tbody>
+        </table>
+        <p>Check permissions with <code>navigator.permissions.query</code></p>
+        <PermissionsChecker/>
       </main>
     </>
   )
