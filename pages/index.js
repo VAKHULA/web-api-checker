@@ -181,58 +181,58 @@ function PermissionsChecker () {
 
   return (
     <table>
-    <thead>
-      <tr>
-      <th>
-        #
-      </th>
-      <th>
-        state
-      </th>
-      <th>
-        name
-      </th>
-      <th>
-        error
-      </th>
-      </tr>
-    </thead>
-    <tbody>
-      {permissions.map((item, idx) => (
-        <tr key={idx}>
-          <td>{idx + 1}</td>
-          <td>
-            {item.state === "granted" &&
-              <mark>
-                granted
-              </mark>
-            }
-            {item.state === "error" &&
-              <mark>
-                error
-              </mark>
-            }
-            {item.state === "prompt" &&
-              <mark>
-                prompt
-              </mark>
-            }
-            {item.state === "denied" &&
-              <mark>
-                denied
-              </mark>
-            }
-          </td>
-          <td>
-            {item.permissionName}
-          </td>
-          <td>
-            {item.errorMessage}
-          </td>
+      <thead>
+        <tr>
+          <th>
+            #
+          </th>
+          <th>
+            state
+          </th>
+          <th>
+            name
+          </th>
+          <th>
+            error
+          </th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {permissions.map((item, idx) => (
+          <tr key={idx}>
+            <td>{idx + 1}</td>
+            <td>
+              {item.state === "granted" &&
+                <mark>
+                  granted
+                </mark>
+              }
+              {item.state === "error" &&
+                <mark>
+                  error
+                </mark>
+              }
+              {item.state === "prompt" &&
+                <mark>
+                  prompt
+                </mark>
+              }
+              {item.state === "denied" &&
+                <mark>
+                  denied
+                </mark>
+              }
+            </td>
+            <td>
+              {item.permissionName}
+            </td>
+            <td>
+              {item.errorMessage}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }
 
@@ -248,7 +248,7 @@ export default function HomePage() {
       </Head>
 
       <main className="container">
-      <table>
+        <table>
           <thead>
             <tr>
               <th scope="col">#</th>
