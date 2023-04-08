@@ -248,6 +248,7 @@ export default function HomePage() {
       </Head>
 
       <main className="container">
+        <h1>web-api-checker</h1>
         <table>
           <thead>
             <tr>
